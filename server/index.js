@@ -3,8 +3,10 @@ import express from 'express'
 import { createClient } from '@supabase/supabase-js'
 import cors from 'cors'
 import productsRouter from './routes/products.routes.js'
-// import bookingsRouter from './routes/bookings.routes.js'
-// import restaurantRouter from './routes/restaurant.routes.js'
+import servicesRouter from './routes/services.routes.js'
+import bookingsAdminRouter from './routes/bookings.routes.js'
+import menuItemsRouter from './routes/menu_items.routes.js'
+import ordersAdminRouter from './routes/orders.routes.js'
 
 // Middleware CORS
 
@@ -21,10 +23,10 @@ const supabase = createClient(
 app.get('/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }))
 
 app.use('/api/products', productsRouter)
-// app.use('/api/services', servicesRouter)
-// app.use('/api/bookings', bookingsRouter)
-// app.use('/api/restaurant', restaurantRouter)
-
+app.use('/api/services', servicesRouter)
+app.use('/api/admin/bookings', bookingsAdminRouter)
+app.use('/api/menu-items', menuItemsRouter)
+app.use('/api/admin/orders', ordersAdminRouter)
 
 // Route de test
 app.get('/api/test-products', async (req, res) => {
@@ -45,8 +47,8 @@ app.get('/api/test-products', async (req, res) => {
 
 //login test
 const { data, error } = await supabase.auth.signInWithPassword({
-  email: 'manager.anais@gmail.com',
-  password: 'manager.anais@gmail.com'
+  email: 'manager.evolve@gmail.com',
+  password: 'manager.evolve@gmail.com'
 })
 
 if (error) {

@@ -1,13 +1,13 @@
 import { Router } from 'express'
 import { ok, created, bad, fail } from '../utils/http.js'
-import * as svc from '../services/services.service.js'
+import * as svc from '../services/menu_items.service.js'
 import { requireUser } from '../middleware/auth.js'
 import { loadAdminRole, requireRole } from '../middleware/roles.js'
 
 const r = Router()
 
 r.get('/',
-  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
+  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_POPULO'),
   async (req, res) => {
     try {
       const page = Number(req.query.page || 1)
@@ -20,7 +20,7 @@ r.get('/',
 )
 
 r.get('/:id',
-  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
+  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_POPULO'),
   async (req, res) => {
     try {
       const { data, error } = await svc.getOne(req, req.params.id)
@@ -32,7 +32,7 @@ r.get('/:id',
 )
 
 r.post('/',
-  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
+  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_POPULO'),
   async (req, res) => {
     try {
       const { data, error } = await svc.create(req, req.body)
@@ -43,7 +43,7 @@ r.post('/',
 )
 
 r.patch('/:id',
-  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
+  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_POPULO'),
   async (req, res) => {
     try {
       const { data, error } = await svc.update(req, req.params.id, req.body)
@@ -54,7 +54,7 @@ r.patch('/:id',
 )
 
 r.delete('/:id',
-  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
+  requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_POPULO'),
   async (req, res) => {
     try {
       const { data, error } = await svc.remove(req, req.params.id)

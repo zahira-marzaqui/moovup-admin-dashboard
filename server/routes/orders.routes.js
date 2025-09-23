@@ -1,12 +1,11 @@
 import { Router } from 'express'
 import { ok, bad, fail } from '../utils/http.js'
-import * as svc from '../services/bookings.service.js'
+import * as svc from '../services/orders.service.js'
 import { requireUser } from '../middleware/auth.js'
 import { loadAdminRole, requireRole } from '../middleware/roles.js'
 
 const r = Router()
 
-// LIST admin (filtre par date/brand/status)
 r.get('/',
   requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
   async (req, res) => {
@@ -14,8 +13,7 @@ r.get('/',
       const page = Number(req.query.page || 1)
       const limit = Number(req.query.limit || 50)
       const { data, error, count } = await svc.list(req, {
-        brand: req.query.brand,
-        status: req.query.status,
+        brand: req.query.brand, status: req.query.status,
         from: req.query.from, to: req.query.to, page, limit
       })
       if (error) return bad(res, error.message)
@@ -24,7 +22,6 @@ r.get('/',
   }
 )
 
-// PATCH status uniquement
 r.patch('/:id/status',
   requireUser, loadAdminRole, requireRole('SUPER_ADMIN','MANAGER_EVOLVE','MANAGER_ANAIS'),
   async (req, res) => {
