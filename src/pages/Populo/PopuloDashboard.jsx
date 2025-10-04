@@ -5,6 +5,5 @@ function PopuloDashboard() {
 
         </>
       );
-}
+}export default PopuloDashboard;
 
-export default PopuloDashboard;

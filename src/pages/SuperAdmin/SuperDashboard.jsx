@@ -14,6 +14,5 @@ function SuperDashboard() {
 
         </>
      );
-}
+}export default SuperDashboard;
 
-export default SuperDashboard;

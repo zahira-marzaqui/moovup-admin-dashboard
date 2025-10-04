@@ -5,6 +5,5 @@ function EvolveDashboard() {
 
         </> 
     );
-}
+}export default EvolveDashboard;
 
-export default EvolveDashboard;
