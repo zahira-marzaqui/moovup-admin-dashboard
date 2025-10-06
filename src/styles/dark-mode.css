@@ -1,0 +1,658 @@
+/* Professional dark mode overrides
+   - Applied when `.dark` is present on <html> (document.documentElement)
+   - Uses high-specificity selectors and !important to override Tailwind utility classes
+   - Covers common patterns used across the app: bg-white, bg-white/90, text-gray-800, borders, cards, inputs, buttons
+*/
+
+:root {
+  --dark-bg: #0b0f14;
+  --dark-surface: #0e1419; /* card backgrounds - slightly lighter for subtle elevation */
+  --dark-muted: #9aa4b2;
+  --dark-icon-pink: #f472b6; /* brighter pink for icons */
+  --dark-icon-blue: #60a5fa; /* brighter blue */
+  --dark-icon-green: #34d399; /* brighter green */
+  --dark-icon-yellow: #f59e0b; /* amber/yellow */
+  --dark-icon-purple: #c084fc; /* soft violet */
+  --dark-accent: #7c3aed; /* purple */
+  --dark-accent-2: #ec4899; /* pink */
+  --dark-border: rgba(255, 255, 255, 0.06);
+  --dark-elev: rgba(255, 255, 255, 0.03);
+  --dark-text: #e6eef8;
+  --dark-heading: #ffffff;
+}
+
+.dark,
+.dark body,
+.dark .app-root {
+  background-color: var(--dark-bg) !important;
+  color: #e6eef8 !important;
+  color-scheme: dark !important;
+}
+
+/* Force root/background overrides for gradient utilities applied to the page root */
+.dark html,
+.dark body,
+.dark .min-h-screen {
+  background-color: var(--dark-bg) !important;
+  background-image: none !important;
+}
+
+/* Some components use Tailwind gradient utility classes on the root container (override them) */
+.dark .bg-gradient-to-br,
+.dark .from-purple-50,
+.dark .via-white,
+.dark .to-pink-50,
+.dark .from-purple-50\/via-white,
+.dark [class*="from-purple-50"] {
+  background: var(--dark-bg) !important;
+  background-image: none !important;
+}
+
+/* Pastel avatar/pill backgrounds: removed dark-mode remapping so the original Tailwind
+  pastel classes (bg-*-50 / bg-*-100) keep their authored look even in .dark. This
+  preserves the original icon-box/pill appearance requested. */
+
+/* Ensure pill icons keep their intended icon color inside */
+.dark [class*="bg-"] > svg,
+.dark [class*="bg-"] svg {
+  color: inherit !important;
+}
+
+/* Force colored icons inside pastel boxes to keep brand hues in dark mode
+   (restores the original look where icons are colored and sit on a light pastel square)
+*/
+.dark .bg-pink-50 > svg,
+.dark .bg-pink-50 svg,
+.dark .bg-pink-100 > svg,
+.dark .bg-pink-100 svg {
+  color: var(--dark-icon-pink) !important;
+  fill: var(--dark-icon-pink) !important;
+  stroke: var(--dark-icon-pink) !important;
+}
+.dark .bg-blue-50 > svg,
+.dark .bg-blue-50 svg,
+.dark .bg-blue-100 > svg,
+.dark .bg-blue-100 svg {
+  color: var(--dark-icon-blue) !important;
+  fill: var(--dark-icon-blue) !important;
+  stroke: var(--dark-icon-blue) !important;
+}
+.dark .bg-green-50 > svg,
+.dark .bg-green-50 svg,
+.dark .bg-green-100 > svg,
+.dark .bg-green-100 svg {
+  color: var(--dark-icon-green) !important;
+  fill: var(--dark-icon-green) !important;
+  stroke: var(--dark-icon-green) !important;
+}
+.dark .bg-purple-50 > svg,
+.dark .bg-purple-50 svg,
+.dark .bg-purple-100 > svg,
+.dark .bg-purple-100 svg {
+  color: var(--dark-icon-purple) !important;
+  fill: var(--dark-icon-purple) !important;
+  stroke: var(--dark-icon-purple) !important;
+}
+
+/* Make pastel icon boxes slightly visible in dark mode so icons have contrast */
+.dark .bg-pink-50,
+.dark .bg-pink-100 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+.dark .bg-blue-50,
+.dark .bg-blue-100 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+.dark .bg-green-50,
+.dark .bg-green-100 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+.dark .bg-purple-50,
+.dark .bg-purple-100 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+.dark .bg-orange-50,
+.dark .bg-orange-100 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Badge / pill text contrast helpers
+  Many components use paired classes like `bg-green-100 text-green-800` for small badges.
+  In dark mode the light background + dark text becomes low contrast; map those specific
+  combinations to lighter accent text so badges remain legible while preserving brand hues.
+*/
+.dark .bg-green-100.text-green-800,
+.dark .bg-green-100 .text-green-800 {
+  color: #34d399 !important;
+}
+.dark .bg-blue-100.text-blue-800,
+.dark .bg-blue-100 .text-blue-800 {
+  color: #60a5fa !important;
+}
+.dark .bg-pink-100.text-pink-800,
+.dark .bg-pink-100 .text-pink-800 {
+  color: #f472b6 !important;
+}
+.dark .bg-purple-100.text-purple-800,
+.dark .bg-purple-100 .text-purple-800 {
+  color: #c084fc !important;
+}
+.dark .bg-gray-100.text-gray-800,
+.dark .bg-gray-100 .text-gray-800 {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+.dark .bg-red-100.text-red-800,
+.dark .bg-red-100 .text-red-800 {
+  color: #fb7185 !important;
+}
+
+/* Small helper for inline status buttons which combine bg-*-100 with text-*-800 */
+.dark .rounded-full[class*="bg-"] {
+  color: inherit;
+}
+
+/* Cards and surfaces */
+.dark .bg-white,
+.dark .bg-white\/90,
+.dark .bg-white\/70,
+.dark .bg-white\/80 {
+  /* Keep component surfaces dark but slightly elevated without bright white */
+  background-color: rgba(
+    15,
+    20,
+    24,
+    0.92
+  ) !important; /* nearly the same as page bg but slightly elevated */
+  color: #e6eef8 !important;
+  box-shadow: 0 6px 18px var(--dark-elev) !important;
+}
+
+/* Transparent/backdrop surfaces */
+.dark .backdrop-blur-sm {
+  backdrop-filter: blur(6px) !important;
+}
+
+/* Text color mappings */
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: var(--dark-text) !important;
+}
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+.dark .text-indigo-900,
+.dark .text-indigo-800 {
+  color: var(--dark-text) !important;
+}
+.dark .text-indigo-500 {
+  color: #9fb3ff !important;
+}
+
+/* Headings and prominent titles */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark .text-2xl,
+.dark .text-3xl,
+.dark .font-semibold {
+  color: var(--dark-heading) !important;
+  opacity: 0.98 !important;
+}
+
+/* Borders */
+.dark .border-gray-200,
+.dark .border {
+  border-color: var(--dark-border) !important;
+}
+
+/* Inputs */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  color: #e6eef8 !important;
+  border-color: var(--dark-border) !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Buttons */
+.dark .bg-gradient-to-r.from-purple-600.to-pink-500,
+.dark .inline-flex.bg-gradient-to-r.from-purple-600.to-pink-500 {
+  background: linear-gradient(
+    90deg,
+    var(--dark-accent) 0%,
+    var(--dark-accent-2) 100%
+  ) !important;
+  color: white !important;
+}
+
+/* Preserve brand card gradients (pink / blue / green) in dark mode so headers keep their color */
+.dark .bg-gradient-to-r.from-pink-500.to-pink-600,
+.dark .bg-gradient-to-br.from-pink-500.to-pink-600,
+.dark .bg-gradient-to-r.from-blue-500.to-blue-600,
+.dark .bg-gradient-to-br.from-blue-500.to-blue-600,
+.dark .bg-gradient-to-r.from-green-500.to-green-600,
+.dark .bg-gradient-to-br.from-green-500.to-green-600 {
+  /* Re-apply the gradient with good contrast in dark mode */
+  background-image: linear-gradient(90deg, #ec4899 0%, #db2777 100%) !important;
+  color: white !important;
+}
+
+/* Specific gradients for blue and green (override above generic block where needed) */
+.dark .bg-gradient-to-r.from-blue-500.to-blue-600,
+.dark .bg-gradient-to-br.from-blue-500.to-blue-600 {
+  background-image: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+}
+.dark .bg-gradient-to-r.from-green-500.to-green-600,
+.dark .bg-gradient-to-br.from-green-500.to-green-600 {
+  background-image: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+}
+
+/* Navbar & header adjustments */
+.dark header,
+.dark .navbar {
+  background-color: transparent !important;
+}
+.dark .text-indigo-900 {
+  color: #e6eef8 !important;
+}
+
+/* Footer */
+.dark footer .bg-white\/70 {
+  background-color: rgba(15, 20, 24, 0.6) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Small utilities */
+.dark .shadow,
+.dark .shadow-sm,
+.dark .shadow-md {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Tables / cards */
+.dark table,
+.dark th,
+.dark td {
+  color: var(--dark-text) !important;
+  border-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Ensure svg strokes/icons are visible only when SVG opts in with .icon-current */
+/* Icons opting in with .icon-current should be outline-style (no internal fill) so the inside is 'vide' */
+.dark svg.icon-current {
+  color: inherit !important;
+  stroke: currentColor !important;
+  fill: none !important; /* ensure hollow interior */
+  stroke-width: 1.8 !important;
+}
+
+/* Default SVG behavior in dark mode: use stroke-only icons (no internal fills).
+   This prevents icons from rendering as solid white shapes inside pastel boxes.
+   If you want an icon to be filled, add class `icon-fill` to the SVG. */
+.dark svg {
+  color: inherit !important;
+  fill: none !important; /* default: no fill */
+  stroke: currentColor !important; /* render as stroke following text color */
+}
+
+/* Make icon-current more visible in dark mode: thicker stroke and ensure color follows utility classes */
+.dark svg.icon-current {
+  color: inherit !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  stroke-width: 1.8 !important;
+}
+
+/* Opt-in filled icons (rare). Add `icon-fill` to an SVG to preserve original filled look. */
+.dark svg.icon-fill {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Keep commonly-used icon text-color utility classes matching light-mode colors.
+   This preserves the colored icons/symbols look from the light theme.
+   (Common Tailwind color hexes used here — adjust if your project's palette differs.) */
+.dark svg.text-gray-700,
+.dark svg.text-gray-600 {
+  color: #374151 !important;
+  stroke: #374151 !important;
+  fill: none !important;
+}
+.dark svg.text-gray-800,
+.dark svg.text-gray-900 {
+  color: #1f2937 !important;
+  stroke: #1f2937 !important;
+  fill: none !important;
+}
+.dark svg.text-gray-200,
+.dark svg.text-gray-300 {
+  color: #e5e7eb !important;
+  stroke: #e5e7eb !important;
+  fill: none !important;
+}
+.dark svg.text-yellow-400 {
+  color: var(--dark-icon-yellow) !important;
+  stroke: var(--dark-icon-yellow) !important;
+  fill: none !important;
+}
+.dark svg.text-green-500 {
+  color: var(--dark-icon-green) !important;
+  stroke: var(--dark-icon-green) !important;
+  fill: none !important;
+}
+.dark svg.text-blue-500 {
+  color: var(--dark-icon-blue) !important;
+  stroke: var(--dark-icon-blue) !important;
+  fill: none !important;
+}
+.dark svg.text-pink-500 {
+  color: var(--dark-icon-pink) !important;
+  stroke: var(--dark-icon-pink) !important;
+  fill: none !important;
+}
+.dark svg.text-purple-600,
+.dark svg.text-purple-500 {
+  color: var(--dark-icon-purple) !important;
+  stroke: var(--dark-icon-purple) !important;
+  fill: none !important;
+}
+.dark svg.text-indigo-500 {
+  color: #6366f1 !important;
+  stroke: #6366f1 !important;
+  fill: none !important;
+}
+.dark svg.text-gray-800,
+.dark svg.text-gray-900 {
+  color: #1f2937 !important;
+  fill: #1f2937 !important;
+  stroke: #1f2937 !important;
+}
+.dark svg.text-gray-200,
+.dark svg.text-gray-300 {
+  color: #e5e7eb !important;
+  fill: #e5e7eb !important;
+  stroke: #e5e7eb !important;
+}
+.dark svg.text-yellow-400 {
+  color: var(--dark-icon-yellow) !important;
+  fill: var(--dark-icon-yellow) !important;
+  stroke: var(--dark-icon-yellow) !important;
+}
+.dark svg.text-green-500 {
+  color: var(--dark-icon-green) !important;
+  fill: var(--dark-icon-green) !important;
+  stroke: var(--dark-icon-green) !important;
+}
+.dark svg.text-blue-500 {
+  color: var(--dark-icon-blue) !important;
+  fill: var(--dark-icon-blue) !important;
+  stroke: var(--dark-icon-blue) !important;
+}
+.dark svg.text-pink-500 {
+  color: var(--dark-icon-pink) !important;
+  fill: var(--dark-icon-pink) !important;
+  stroke: var(--dark-icon-pink) !important;
+}
+.dark svg.text-purple-600,
+.dark svg.text-purple-500 {
+  color: var(--dark-icon-purple) !important;
+  fill: var(--dark-icon-purple) !important;
+  stroke: var(--dark-icon-purple) !important;
+}
+.dark svg.text-indigo-500 {
+  color: #6366f1 !important;
+  fill: #6366f1 !important;
+  stroke: #6366f1 !important;
+}
+
+/* Quick action cards: ensure outline (stroke-only) icons respect the text color utility
+   and render as stroke (no fill). Targets the common w-8 h-8 icons inside action cards. */
+.dark .bg-white .w-8.h-8 {
+  fill: none !important;
+  stroke: currentColor !important;
+  color: inherit !important;
+}
+
+/* If an icon is outline-only (uses stroke), make sure stroke follows the text color util class */
+.dark .bg-white .w-8.h-8.text-purple-600 {
+  color: #c084fc !important;
+  stroke: #c084fc !important;
+}
+.dark .bg-white .w-8.h-8.text-blue-600 {
+  color: #60a5fa !important;
+  stroke: #60a5fa !important;
+}
+.dark .bg-white .w-8.h-8.text-green-600 {
+  color: #34d399 !important;
+  stroke: #34d399 !important;
+}
+.dark .bg-white .w-8.h-8.text-orange-600 {
+  color: #fb923c !important;
+  stroke: #fb923c !important;
+}
+
+/* Sidebar: subtle hover and active states in dark mode while preserving brand icon colors */
+.dark aside[role],
+.dark aside {
+  background-color: var(--dark-bg) !important;
+}
+
+.dark .sidebar-item-hoverable:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important; /* soft contrast */
+}
+
+/* Active/selected sidebar link: gentle surface and keep icon color */
+.dark nav a[aria-current="page"] {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Ensure the icon inside the sidebar keeps its brand hue in dark mode */
+.dark nav a svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Add a class hook for the Link rendering to pick up hover styles */
+.dark nav a:hover span,
+.dark nav a[aria-current="page"] span {
+  color: var(--dark-text) !important;
+}
+
+/* Stat cards: make the small pastel icon boxes transparent and keep the icon color visible */
+.dark .bg-white .p-3.rounded-lg {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.dark .bg-white .p-3.rounded-lg > svg,
+.dark .bg-white .p-3.rounded-lg svg {
+  fill: none !important;
+  stroke: currentColor !important;
+  color: inherit !important;
+}
+
+/* Also target the standalone small boxes used in the grid (w-8/h-8) */
+.dark .bg-white .w-8.h-8,
+.dark .bg-white .w-10.h-10 {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* === Small icon box visuals (dashboard) ===
+   Make small icon containers use a pale pastel background and the icon display in
+   the corresponding brand color (similar to the light theme). Targets common sizes
+   used across the dashboard: w-8/h-8 and w-10/h-10. */
+.dark .w-8.h-8.bg-pink-50,
+.dark .w-8.h-8.bg-pink-100,
+.dark .w-10.h-10.bg-pink-50,
+.dark .w-10.h-10.bg-pink-100 {
+  background-color: rgba(236, 72, 153, 0.12) !important;
+  color: var(--dark-icon-pink) !important;
+  border-radius: 0.5rem !important;
+}
+.dark .w-8.h-8.bg-blue-50,
+.dark .w-8.h-8.bg-blue-100,
+.dark .w-10.h-10.bg-blue-50,
+.dark .w-10.h-10.bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  color: var(--dark-icon-blue) !important;
+  border-radius: 0.5rem !important;
+}
+/* Override for stat card icon containers: keep icon colors but make the background transparent
+   so the small pastel box from light mode doesn't appear as a filled block in dark mode. */
+.dark .p-3.rounded-lg.bg-pink-50,
+.dark .p-3.rounded-lg.bg-pink-100,
+.dark .p-3.rounded-lg.bg-blue-50,
+.dark .p-3.rounded-lg.bg-blue-100,
+.dark .p-3.rounded-lg.bg-green-50,
+.dark .p-3.rounded-lg.bg-green-100,
+.dark .p-3.rounded-lg.bg-purple-50,
+.dark .p-3.rounded-lg.bg-purple-100,
+.dark .p-3.rounded-lg.bg-orange-50,
+.dark .p-3.rounded-lg.bg-orange-100,
+.dark .p-3.rounded-lg.bg-gray-100 {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Ensure the svg inside those containers keeps the brand color (existing rules in this file
+   already map .bg-*-50 > svg to the correct icon color). We intentionally do not change
+   svg rules here so the color is preserved via the existing mappings. */
+.dark .w-8.h-8.bg-green-50,
+.dark .w-8.h-8.bg-green-100,
+.dark .w-10.h-10.bg-green-50,
+.dark .w-10.h-10.bg-green-100 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: var(--dark-icon-green) !important;
+  border-radius: 0.5rem !important;
+}
+.dark .w-8.h-8.bg-purple-50,
+.dark .w-8.h-8.bg-purple-100,
+.dark .w-10.h-10.bg-purple-50,
+.dark .w-10.h-10.bg-purple-100 {
+  background-color: rgba(124, 58, 237, 0.1) !important;
+  color: var(--dark-icon-purple) !important;
+  border-radius: 0.5rem !important;
+}
+.dark .w-8.h-8.bg-gray-50,
+.dark .w-8.h-8.bg-gray-100,
+.dark .w-10.h-10.bg-gray-50,
+.dark .w-10.h-10.bg-gray-100 {
+  /* Reduce the white flash from gray pastel boxes in dark mode.
+     Keep them as subtle, slightly lighter surfaces (not pure white). */
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: var(
+    --dark-text
+  ) !important; /* use the dark-mode text color for icons */
+  border-radius: 0.5rem !important;
+}
+
+/* Ensure SVGs inside these boxes use currentColor for fill/stroke */
+.dark .w-8.h-8.bg-pink-50 svg,
+.dark .w-8.h-8.bg-pink-100 svg,
+.dark .w-10.h-10.bg-pink-50 svg,
+.dark .w-10.h-10.bg-pink-100 svg,
+.dark .w-8.h-8.bg-blue-50 svg,
+.dark .w-8.h-8.bg-blue-100 svg,
+.dark .w-10.h-10.bg-blue-50 svg,
+.dark .w-10.h-10.bg-blue-100 svg,
+.dark .w-8.h-8.bg-green-50 svg,
+.dark .w-8.h-8.bg-green-100 svg,
+.dark .w-10.h-10.bg-green-50 svg,
+.dark .w-10.h-10.bg-green-100 svg,
+.dark .w-8.h-8.bg-purple-50 svg,
+.dark .w-8.h-8.bg-purple-100 svg,
+.dark .w-10.h-10.bg-purple-50 svg,
+.dark .w-10.h-10.bg-purple-100 svg,
+.dark .w-8.h-8.bg-gray-50 svg,
+.dark .w-8.h-8.bg-gray-100 svg,
+.dark .w-10.h-10.bg-gray-50 svg,
+.dark .w-10.h-10.bg-gray-100 svg {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Also target icon boxes that use rounded-full or rounded-lg with bg-* */
+.dark .rounded-full.w-8.h-8[class*="bg-"],
+.dark .rounded-lg.w-10.h-10[class*="bg-"] {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Force icon buttons to be stroke-only and avoid bright fills in dark mode */
+.dark .icon-btn {
+  background-color: transparent !important; /* let bg-* classes control subtle pastel */
+  padding: 0.375rem !important; /* keep spacing consistent */
+}
+.dark .icon-btn[class*="bg-"] {
+  /* make sure pastel bg colors are subtle and not pure white */
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+.dark .icon-btn svg {
+  fill: none !important; /* avoid fully-filled icons */
+  stroke: currentColor !important; /* show icons as strokes using the color utility */
+}
+
+/* If an IconButton explicitly used bg-*-50/100 supply slightly tinted background so pastel boxes are visible */
+.dark .icon-btn.bg-pink-50,
+.dark .icon-btn.bg-pink-100 {
+  background-color: rgba(236, 72, 153, 0.06) !important;
+}
+.dark .icon-btn.bg-blue-50,
+.dark .icon-btn.bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.06) !important;
+}
+.dark .icon-btn.bg-green-50,
+.dark .icon-btn.bg-green-100 {
+  background-color: rgba(16, 185, 129, 0.05) !important;
+}
+.dark .icon-btn.bg-gray-50,
+.dark .icon-btn.bg-gray-100 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Accessibility: reduced motion preference honored for future animations */
+@media (prefers-reduced-motion: reduce) {
+  .dark * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Icon button hover / glow styles for a professional dashboard look */
+.icon-btn {
+  transition: transform 160ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 200ms ease, background-color 160ms ease;
+}
+.icon-btn:hover {
+  transform: translateY(-2px);
+}
+.dark .icon-btn:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.6), 0 0 18px rgba(124, 58, 237, 0.06); /* subtle purple glow */
+}
+.dark .icon-glow-blue:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.6), 0 0 18px rgba(59, 130, 246, 0.08);
+}
+.dark .icon-glow-green:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.6), 0 0 18px rgba(16, 185, 129, 0.06);
+}
+.dark .icon-glow-pink:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.6), 0 0 18px rgba(236, 72, 153, 0.06);
+}
+
+/* Helper: dark-mode on body for older templates */
+body.dark {
+  background-color: var(--dark-bg) !important;
+  color: #e6eef8 !important;
+}
