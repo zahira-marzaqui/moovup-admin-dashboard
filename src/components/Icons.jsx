@@ -23,6 +23,14 @@ import {
   CakeIcon as HiCake,
   CurrencyDollarIcon as HiCurrency,
   UsersIcon as HiUsers,
+  ClockIcon as HiClock,
+  Squares2X2Icon as HiSquares,
+  TableCellsIcon as HiTable,
+  UserIcon as HiUser,
+  PhoneIcon as HiPhone,
+  TruckIcon as HiTruck,
+  ChevronLeftIcon as HiChevronLeft,
+  ChevronRightIcon as HiChevronRight,
 } from "@heroicons/react/24/outline";
 
 export const HomeIcon = ({ className = "w-6 h-6" }) => (
@@ -120,4 +128,28 @@ export const CakeIcon = ({ className = "w-6 h-6" }) => (
 );
 export const CurrencyDollarIcon = ({ className = "w-6 h-6" }) => (
   <HiCurrency className={className} />
+);
+export const ClockIcon = ({ className = "w-6 h-6" }) => (
+  <HiClock className={className} />
+);
+export const Squares2X2Icon = ({ className = "w-6 h-6" }) => (
+  <HiSquares className={className} />
+);
+export const TableCellsIcon = ({ className = "w-6 h-6" }) => (
+  <HiTable className={className} />
+);
+export const UserIcon = ({ className = "w-6 h-6" }) => (
+  <HiUser className={className} />
+);
+export const PhoneIcon = ({ className = "w-6 h-6" }) => (
+  <HiPhone className={className} />
+);
+export const TruckIcon = ({ className = "w-6 h-6" }) => (
+  <HiTruck className={className} />
+);
+export const ChevronLeftIcon = ({ className = "w-6 h-6" }) => (
+  <HiChevronLeft className={className} />
+);
+export const ChevronRightIcon = ({ className = "w-6 h-6" }) => (
+  <HiChevronRight className={className} />
 );

@@ -15,10 +15,11 @@ import IconBox from "../../components/IconBox";
 import {
   OutlineCakeIcon,
   OutlineClipboardIcon,
-  OutlineChartIcon,
-  OutlineCurrencyIcon,
 } from "../../components/OutlineIcons";
 import ChartPlaceholder from "../../components/ChartPlaceholder";
+import ProductList from "../../features/store/products/ProductList";
+import { PopuloOrderList } from "../../features/store/populo_orders";
+import PopuloOrderDetailPage from "../../features/store/populo_orders/PopuloOrderDetailPage";
 
 export default function PopuloDashboard() {
   const [stats, setStats] = useState({
@@ -37,7 +38,44 @@ export default function PopuloDashboard() {
   const loadDashboardStats = async () => {
     try {
       setLoading(true);
-      const data = await apiGet("/api/stats/populo").catch(() => ({
+      
+      // Charger les statistiques depuis les APIs
+      const [menuItemsResponse, ordersResponse] = await Promise.allSettled([
+        apiGet("/api/menu-items"),
+        apiGet("/api/admin/populo-orders")
+      ]);
+      
+      const menuItems = menuItemsResponse.status === 'fulfilled' ? menuItemsResponse.value.data : [];
+      const orders = ordersResponse.status === 'fulfilled' ? ordersResponse.value.data : [];
+      
+      // Calculer les statistiques
+      const revenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+      const recentOrders = orders.filter(order => {
+        const orderDate = new Date(order.orderDate || order.createdAt);
+        const today = new Date();
+        const diffTime = Math.abs(today - orderDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 1;
+      }).length;
+      
+      // Calculer les plats populaires (mock pour l'instant)
+      const popularItems = [
+        { name: "Salade Buddha Bowl", orders: 45 },
+        { name: "Smoothie Detox", orders: 38 },
+        { name: "Wrap Avocat", orders: 32 },
+      ];
+      
+      setStats({
+        menuItems: menuItems.length,
+        orders: orders.length,
+        revenue,
+        recentOrders,
+        popularItems
+      });
+    } catch (error) {
+      console.error("Erreur chargement statistiques:", error);
+      // Fallback avec des données mockées
+      setStats({
         menuItems: 28,
         orders: 156,
         revenue: 18900,
@@ -47,10 +85,7 @@ export default function PopuloDashboard() {
           { name: "Smoothie Detox", orders: 38 },
           { name: "Wrap Avocat", orders: 32 },
         ],
-      }));
-      setStats(data);
-    } catch (error) {
-      console.error("Erreur chargement statistiques:", error);
+      });
     } finally {
       setLoading(false);
     }
@@ -61,8 +96,8 @@ export default function PopuloDashboard() {
       title: "Menu Items",
       value: stats.menuItems.toLocaleString(),
       icon: OutlineCakeIcon,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-populo-900",
+      bgColor: "bg-populo-50",
       trend: "+2.4%",
       trendUp: true,
       description: "Plats disponibles",
@@ -71,8 +106,8 @@ export default function PopuloDashboard() {
       title: "Commandes",
       value: stats.orders.toLocaleString(),
       icon: OutlineClipboardIcon,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-populo-800",
+      bgColor: "bg-populo-100",
       trend: "+15.3%",
       trendUp: true,
       description: "Ce mois",
@@ -81,8 +116,8 @@ export default function PopuloDashboard() {
       title: "Chiffre d'affaires",
       value: `${stats.revenue.toLocaleString()} MAD`,
       icon: CurrencyDollarIcon,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
+      color: "text-populo-700",
+      bgColor: "bg-populo-200",
       trend: "+18.7%",
       trendUp: true,
       description: "Ce mois",
@@ -91,8 +126,8 @@ export default function PopuloDashboard() {
       title: "Commandes récentes",
       value: stats.recentOrders.toLocaleString(),
       icon: ChartBarIcon,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
+      color: "text-populo-600",
+      bgColor: "bg-populo-300",
       trend: "+5.1%",
       trendUp: true,
       description: "Aujourd'hui",
@@ -104,32 +139,32 @@ export default function PopuloDashboard() {
       title: "Ajouter un plat",
       description: "Nouveau menu item",
       icon: PlusIcon,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-populo-900",
+      bgColor: "bg-populo-50",
       action: () => console.log("Add menu item"),
     },
     {
       title: "Gérer le menu",
       description: "Modifier les plats",
       icon: CakeIcon,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-populo-800",
+      bgColor: "bg-populo-100",
       action: () => console.log("Manage menu"),
     },
     {
       title: "Voir commandes",
       description: `${stats.recentOrders} nouvelles`,
       icon: ClipboardDocumentListIcon,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
+      color: "text-populo-700",
+      bgColor: "bg-populo-200",
       action: () => console.log("View orders"),
     },
     {
       title: "Statistiques",
       description: "Analytics détaillées",
       icon: ChartBarIcon,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-populo-600",
+      bgColor: "bg-populo-300",
       action: () => console.log("View stats"),
     },
   ];
@@ -137,7 +172,7 @@ export default function PopuloDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-populo-900"></div>
       </div>
     );
   }
@@ -145,15 +180,15 @@ export default function PopuloDashboard() {
   return (
     <Routes>
       <Route
-        index
+        path="/"
         element={
           <div className="space-y-8">
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-8 text-white">
+            <div className="bg-populo-900 rounded-xl p-8 text-white">
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold">Dashboard Populo</h1>
-                  <p className="text-green-100 mt-2">
+                  <p className="text-populo-100 mt-2">
                     Restaurant repas healthy
                   </p>
                 </div>
@@ -161,7 +196,7 @@ export default function PopuloDashboard() {
                   <p className="text-2xl font-bold">
                     {stats.revenue.toLocaleString()} MAD
                   </p>
-                  <p className="text-green-100 text-sm">
+                  <p className="text-populo-100 text-sm">
                     Chiffre d'affaires ce mois
                   </p>
                 </div>
@@ -177,15 +212,7 @@ export default function PopuloDashboard() {
                 >
                   <div className="flex items-center justify-between">
                     <IconBox
-                      variant={
-                        stat.bgColor.includes("green")
-                          ? "green"
-                          : stat.bgColor.includes("blue")
-                          ? "blue"
-                          : stat.bgColor.includes("purple")
-                          ? "purple"
-                          : "gray"
-                      }
+                      variant="populo"
                       size="w-10 h-10"
                       rounded="rounded-lg"
                     >
@@ -228,22 +255,14 @@ export default function PopuloDashboard() {
                     className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow text-left group"
                   >
                     <IconBox
-                      variant={
-                        action.bgColor.includes("green")
-                          ? "green"
-                          : action.bgColor.includes("blue")
-                          ? "blue"
-                          : action.bgColor.includes("purple")
-                          ? "purple"
-                          : "gray"
-                      }
+                      variant="populo"
                       size="w-10 h-10"
                       rounded="rounded-md"
                       className="mb-4 inline-block"
                     >
                       <action.icon className="w-6 h-6" />
                     </IconBox>
-                    <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                    <h3 className="font-semibold text-gray-900 group-hover:text-populo-900 transition-colors">
                       {action.title}
                     </h3>
                     <p className="text-gray-600 text-sm mt-1">
@@ -268,8 +287,8 @@ export default function PopuloDashboard() {
                       className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <CakeIcon className="w-4 h-4 text-green-600" />
+                        <div className="w-8 h-8 bg-populo-100 rounded-full flex items-center justify-center">
+                          <CakeIcon className="w-4 h-4 text-populo-900" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">
@@ -303,8 +322,8 @@ export default function PopuloDashboard() {
                       className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <ClipboardDocumentListIcon className="w-4 h-4 text-blue-600" />
+                        <div className="w-8 h-8 bg-populo-100 rounded-full flex items-center justify-center">
+                          <ClipboardDocumentListIcon className="w-4 h-4 text-populo-900" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">
@@ -339,11 +358,15 @@ export default function PopuloDashboard() {
       {/* Routes pour les sous-pages */}
       <Route
         path="menu"
-        element={<div>Menu Items Populo - À implémenter</div>}
+        element={<ProductList brand="populo" />}
       />
       <Route
         path="orders"
-        element={<div>Commandes Populo - À implémenter</div>}
+        element={<PopuloOrderList />}
+      />
+      <Route
+        path="orders/:id"
+        element={<PopuloOrderDetailPage />}
       />
       <Route
         path="stats"

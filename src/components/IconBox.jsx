@@ -26,6 +26,9 @@ export default function IconBox({
     yellow: "bg-yellow-50",
     orange: "bg-orange-50",
     gray: "bg-gray-100",
+    evolve: "bg-evolve-50",
+    anais: "bg-anais-50",
+    populo: "bg-populo-50",
   };
 
   const bgClass = variantBg[variant] || variantBg.pink;
@@ -39,6 +42,9 @@ export default function IconBox({
     yellow: "text-yellow-400",
     orange: "text-orange-400",
     gray: "text-gray-700",
+    evolve: "text-evolve-900",
+    anais: "text-anais-900",
+    populo: "text-populo-900",
   };
 
   const icoClass =
@@ -73,6 +79,9 @@ IconBox.propTypes = {
     "yellow",
     "orange",
     "gray",
+    "evolve",
+    "anais",
+    "populo",
   ]),
   size: PropTypes.string,
   rounded: PropTypes.string,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { EyeIcon } from "../components/Icons";
+import { supabase } from "../config/supabaseClient";
 
 const EyeSlashIcon = ({ className }) => (
   <svg
@@ -135,50 +136,103 @@ export default function Login() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+  
     try {
-      // Comptes de démonstration (inchangés)
-      const demoAccounts = {
-        "admin@moovup.com": {
-          password: "admin123",
-          user: { id: "1", email: "admin@moovup.com" },
-          profile: { id: 1, name: "Super Admin", role: "SUPER_ADMIN" },
-        },
-        "manager.anais@gmail.com": {
-          password: "manager.anais@gmail.com",
-          user: { id: "2", email: "manager.anais@gmail.com" },
-          profile: { id: 2, name: "Manager Anais", role: "MANAGER_ANAIS" },
-        },
-        "manager.evolve@gmail.com": {
-          password: "manager.evolve@gmail.com",
-          user: { id: "3", email: "manager.evolve@gmail.com" },
-          profile: { id: 3, name: "Manager Evolve", role: "MANAGER_EVOLVE" },
-        },
-        "manager.populo@gmail.com": {
-          password: "manager.populo@gmail.com",
-          user: { id: "4", email: "manager.populo@gmail.com" },
-          profile: { id: 4, name: "Manager Populo", role: "MANAGER_POPULO" },
-        },
-      };
+      // // 1) Login Supabase
+      // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      // console.log("Résultat Supabase:", { data, error });
+  
+      // if (error) {
+      //   setError(error.message || "Email ou mot de passe incorrect");
+      //   setLoading(false);
+      //   return;
+      // }
+      // if (!data?.session) {
+      //   setError("Aucune session créée");
+      //   setLoading(false);
+      //   return;
+      // }
+  
+      // // 2) Sauvegarder la session immédiatement (ne pas bloquer sur l’API)
+      // const token = data.session.access_token;
+      // localStorage.setItem("token", token);
+      // localStorage.setItem("user", JSON.stringify({ user: data.user, session: data.session }));
+  
+      // // 3) Essayer de récupérer le profil (best-effort, NON bloquant)
+      // try {
+      //   const apiUrl = `${process.env.REACT_APP_API_URL}/api/auth/profile`;
+      //   const resp = await fetch(apiUrl, {
+      //     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      //   });
+      //   if (resp.ok) {
+      //     const profile = await resp.json();
+      //     const saved = JSON.parse(localStorage.getItem("user") || "{}");
+      //     localStorage.setItem("user", JSON.stringify({ ...saved, profile: profile.data }));
+      //   } else {
+      //     const txt = await resp.text();
+      //     console.warn("Profil API non disponible:", resp.status, txt);
+      //   }
+      // } catch (e2) {
+      //   console.warn("Erreur profil (ignorée pour ne pas bloquer):", e2);
+      // }
+  
+      // // 4) Recharger -> App.js lira la session et routera selon le rôle
+      // window.location.href = "/";
+      // Connexion via Supabase
+      // ...
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) throw error
 
-      const account = demoAccounts[email];
-      if (!account || account.password !== password) {
-        setError("Email ou mot de passe incorrect");
-        setLoading(false);
-        return;
-      }
+        // // 1) Appel backend pour le profil
+        // const resp = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/profile`, {
+        //   headers: { Authorization: `Bearer ${data.session.access_token}` }
+        // })
+        // if (!resp.ok) throw new Error(await resp.text())
+        // const profilePayload = await resp.json()
 
-      // Simuler une connexion
-      await new Promise((resolve) => setTimeout(resolve, 900));
-      localStorage.setItem("demoUser", JSON.stringify(account));
-      window.location.reload();
+        // // 2) Stocker user + session + profile ensemble
+        // const userData = {
+        //   user: data.user,
+        //   session: data.session,
+        //   profile: profilePayload.data || profilePayload // selon ton ok()
+        // }
+        // localStorage.setItem('user', JSON.stringify(userData))
+        // localStorage.setItem('token', data.session.access_token)
+
+        // // 3) Recharger / rediriger
+        // window.location.replace('/')   // évite un re-render bancal
+
+        // 1) appeler le backend et éviter le cache
+        const resp = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/profile`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${data.session.access_token}`,
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache'
+          },
+          cache: 'no-store'
+        })
+        if (!resp.ok) throw new Error(await resp.text())
+        const profilePayload = await resp.json()
+        const profile = profilePayload.data ?? profilePayload   // selon ton ok()
+
+        // 2) écrire user + session + profile DANS LA MÊME ENTRÉE
+        const userData = { user: data.user, session: data.session, profile }
+        localStorage.setItem('user', JSON.stringify(userData))
+        localStorage.setItem('token', data.session.access_token) // utile pour Postman/HTTP
+
+        // 3) naviguer (pas de reload avant setItem)
+        window.location.replace('/') 
+
+
+
     } catch (err) {
-      setError("Erreur de connexion. Veuillez réessayer.");
-    } finally {
+      console.error("Erreur de connexion:", err);
+      setError(err.message || "Erreur de connexion");
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-purple-50 via-white to-pink-50 overflow-hidden flex flex-col">
       {/* Decorative layered blobs + subtle waves background */}

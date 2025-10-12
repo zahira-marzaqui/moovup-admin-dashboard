@@ -36,28 +36,41 @@ export default function SuperDashboard() {
   const loadDashboardStats = async () => {
     try {
       setLoading(true);
-      // Charger les statistiques pour tous les stores
+      console.log("Chargement des statistiques SuperAdmin...");
+      
+      // Charger les statistiques pour tous les stores avec timeout
       const [anaisStats, evolveStats, populoStats] = await Promise.all([
-        apiGet("/api/stats/anais").catch(() => ({
-          products: 0,
-          services: 0,
-          bookings: 0,
-          orders: 0,
-          revenue: 0,
-        })),
-        apiGet("/api/stats/evolve").catch(() => ({
-          products: 0,
-          services: 0,
-          bookings: 0,
-          orders: 0,
-          revenue: 0,
-        })),
-        apiGet("/api/stats/populo").catch(() => ({
-          menuItems: 0,
-          orders: 0,
-          revenue: 0,
-        })),
+        apiGet("/api/stats/anais").catch((error) => {
+          console.error("Erreur stats Anais:", error);
+          return {
+            products: 0,
+            services: 0,
+            bookings: 0,
+            orders: 0,
+            revenue: 0,
+          };
+        }),
+        apiGet("/api/stats/evolve").catch((error) => {
+          console.error("Erreur stats Evolve:", error);
+          return {
+            products: 0,
+            services: 0,
+            bookings: 0,
+            orders: 0,
+            revenue: 0,
+          };
+        }),
+        apiGet("/api/stats/populo").catch((error) => {
+          console.error("Erreur stats Populo:", error);
+          return {
+            menuItems: 0,
+            orders: 0,
+            revenue: 0,
+          };
+        }),
       ]);
+
+      console.log("Statistiques chargées:", { anaisStats, evolveStats, populoStats });
 
       const totalRevenue =
         anaisStats.revenue + evolveStats.revenue + populoStats.revenue;
@@ -73,9 +86,25 @@ export default function SuperDashboard() {
         totalOrders,
         totalBookings,
       });
+      
+      console.log("Statistiques finales:", {
+        totalRevenue,
+        totalOrders,
+        totalBookings,
+      });
     } catch (error) {
       console.error("Erreur chargement statistiques:", error);
+      // Fallback avec des données par défaut
+      setStats({
+        anais: { products: 0, services: 0, bookings: 0, orders: 0, revenue: 0 },
+        evolve: { products: 0, services: 0, bookings: 0, orders: 0, revenue: 0 },
+        populo: { menuItems: 0, orders: 0, revenue: 0 },
+        totalRevenue: 0,
+        totalOrders: 0,
+        totalBookings: 0,
+      });
     } finally {
+      console.log("Fin du chargement des statistiques");
       setLoading(false);
     }
   };
@@ -85,7 +114,7 @@ export default function SuperDashboard() {
       name: "Anais",
       brand: "anais",
       path: "/anais",
-      color: "bg-gradient-to-br from-pink-500 to-pink-600",
+      color: "bg-gradient-to-br from-anais-900 to-anais-800",
       icon: ShoppingBagIcon,
       stats: stats.anais,
       description: "Store cosmétique & spa pour femmes",
@@ -94,7 +123,7 @@ export default function SuperDashboard() {
       name: "Evolve",
       brand: "evolve",
       path: "/evolve",
-      color: "bg-gradient-to-br from-blue-500 to-blue-600",
+      color: "bg-gradient-to-br from-evolve-900 to-evolve-800",
       icon: ShoppingBagIcon,
       stats: stats.evolve,
       description: "Store & spa pour hommes",
@@ -103,7 +132,7 @@ export default function SuperDashboard() {
       name: "Populo",
       brand: "populo",
       path: "/populo",
-      color: "bg-gradient-to-br from-green-500 to-green-600",
+      color: "bg-gradient-to-br from-populo-900 to-populo-800",
       icon: ClipboardDocumentListIcon,
       stats: stats.populo,
       description: "Restaurant repas healthy",

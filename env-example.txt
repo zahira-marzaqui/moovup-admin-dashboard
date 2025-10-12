@@ -1,0 +1,11 @@
+# Copiez ce fichier vers .env et remplissez avec vos vraies valeurs Supabase
+
+# Configuration Supabase (OBLIGATOIRE pour utiliser les vrais comptes)
+REACT_APP_SUPABASE_URL=https://your-project.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Configuration API Backend
+REACT_APP_API_URL=http://localhost:5000
+
+# Configuration pour le développement
+REACT_APP_ENV=development

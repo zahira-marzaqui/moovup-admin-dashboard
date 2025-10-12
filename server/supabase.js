@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Client “user” (RLS appliquées via token du user)
 export const createUserClient = (accessToken) =>
